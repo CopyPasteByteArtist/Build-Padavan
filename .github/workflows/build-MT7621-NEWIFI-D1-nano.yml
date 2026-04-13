@@ -1,0 +1,83 @@
+name: Build MT7621 NEWIFI-D1-nano
+
+on: 
+  repository_dispatch:
+  workflow_dispatch:
+
+env:
+  TNAME: "NEWIFI-D1-nano"
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+    - name: Initialization environment
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        echo 'Run lscpu:'
+        lscpu
+        echo 'Run df -h:'
+        df -h
+        echo 'Run ls -la /mnt:'
+        ls -la /mnt
+        echo 'Run free -h:'
+        free -h
+        
+        sudo apt-get update
+        sudo apt install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd \
+        fakeroot kmod cpio git python3-docutils gettext automake autopoint \
+        texinfo build-essential help2man pkg-config zlib1g-dev libgmp3-dev \
+        libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget libc-dev-bin
+        
+        sudo mkdir -p /mnt/opt
+        sudo chown $USER:$GROUPS /mnt/opt
+  
+    - name: Clone source code
+      run: |
+        echo 'current dir:'
+        pwd
+        
+        mkdir -p /mnt/opt/rt-n56u
+        ln -sf /mnt/opt/rt-n56u /opt/rt-n56u
+        
+        git clone --depth=1 https://github.com/CopyPasteByteArtist/chongshengB-rt-n56u.git /opt/rt-n56u
+        sed -i 's/192.168.2/192.168.99/g' /opt/rt-n56u/trunk/user/shared/defaults.h
+        sed -i 's/ntp1.aliyun.com/time.pool.aliyun.com/g' /opt/rt-n56u/trunk/user/shared/defaults.h
+        sed -i 's/2001:470:0:50::2/time.asia.apple.com/g' /opt/rt-n56u/trunk/user/shared/defaults.h
+        echo 'cat /opt/rt-n56u/trunk/user/shared/defaults.h:'
+        cat /opt/rt-n56u/trunk/user/shared/defaults.h
+        
+        cd /opt/rt-n56u/toolchain-mipsel
+        sh dl_toolchain.sh
+        
+        echo 'Run ls -la /opt/rt-n56u/toolchain-mipsel:'
+        ls -la /opt/rt-n56u/toolchain-mipsel
+        mkdir -p /opt/images/
+
+    - name: Build Firmware
+      run: |
+        echo "FILE_DATE=-$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+        cp -vpf $GITHUB_WORKSPACE/$TNAME/$TNAME.config /opt/rt-n56u/trunk/.config
+        cat /opt/rt-n56u/trunk/.config
+        cd /opt/rt-n56u/trunk
+        ./clear_tree_simple
+        fakeroot ./build_firmware_modify $TNAME 0
+        mv -f images/*.trx /opt/images
+        cp -vpf $GITHUB_WORKSPACE/$TNAME/$TNAME.config /opt/images
+
+        echo 'Run df -h:'
+        df -h
+        echo 'Run ls -la /mnt:'
+        ls -la /mnt
+        echo 'Run free -h:'
+        free -h
+
+    - name : Upload artifact
+      uses: actions/upload-artifact@main
+      with:
+        name: Padavan-MT7621-NEWIFI-D1-nano-C${{ env.FILE_DATE }}
+        path: /opt/images
