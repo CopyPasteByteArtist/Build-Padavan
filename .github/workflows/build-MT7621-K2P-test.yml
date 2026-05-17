@@ -35,6 +35,8 @@ jobs:
         
         sudo mkdir -p /mnt/opt
         sudo chown $USER:$USER /mnt/opt
+        echo 'Run ls -la /mnt:'
+        ls -la /mnt
   
     - name: Clone source code
       run: |
