@@ -35,6 +35,8 @@ jobs:
         
         sudo mkdir -p /mnt/opt
         sudo chown $USER:$USER /mnt/opt
+        echo 'Run ls -la /mnt:'
+        ls -la /mnt
   
     - name: Clone source code
       run: |
@@ -42,7 +44,10 @@ jobs:
         pwd
         
         mkdir -p /mnt/opt/rt-n56u
-        ln -sf /mnt/opt/rt-n56u /opt/rt-n56u
+        sudo rm -rf /opt/rt-n56u
+        ln -s /mnt/opt/rt-n56u /opt/rt-n56u
+        echo 'Run ls -la /opt/rt-n56u:'
+        ls -la /opt/rt-n56u
         
         git clone --depth=1 --single-branch https://github.com/CopyPasteByteArtist/chongshengB-rt-n56u.git /opt/rt-n56u
         sed -i 's/192.168.2/192.168.6/g' /opt/rt-n56u/trunk/user/shared/defaults.h
@@ -88,6 +93,6 @@ jobs:
     - name : Upload artifact
       uses: actions/upload-artifact@main
       with:
-        name: Padavan-MT7621-K2P-C${{ env.FILE_DATE }}
+        name: Padavan-MT7621-$TNAME-C${{ env.FILE_DATE }}
         path: /opt/images
         
