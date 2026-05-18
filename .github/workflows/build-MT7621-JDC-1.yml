@@ -44,7 +44,7 @@ jobs:
         mkdir -p /mnt/opt/rt-n56u
         ln -sf /mnt/opt/rt-n56u /opt/rt-n56u
         
-        git clone --depth=1 --single-branch https://github.com/CopyPasteByteArtist/chongshengB-rt-n56u.git /opt/rt-n56u
+        git clone --depth=1 --single-branch https://github.com/CopyPasteByteArtist/Qin0919-Padavan.git /opt/rt-n56u
         sed -i 's/192.168.2/192.168.68/g' /opt/rt-n56u/trunk/user/shared/defaults.h
         sed -i 's/ntp1.aliyun.com/time.pool.aliyun.com/g' /opt/rt-n56u/trunk/user/shared/defaults.h
         sed -i 's/2001:470:0:50::2/time.asia.apple.com/g' /opt/rt-n56u/trunk/user/shared/defaults.h
