@@ -88,6 +88,6 @@ jobs:
     - name : Upload artifact
       uses: actions/upload-artifact@main
       with:
-        name: Padavan-MT7621-${{ env.TNAME }}-C${{ env.FILE_DATE }}
+        name: Padavan-MT7620-${{ env.TNAME }}-C${{ env.FILE_DATE }}
         path: /opt/images
         
